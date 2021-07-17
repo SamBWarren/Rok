@@ -1,20 +1,33 @@
 Table of contents
 
 1.0) About
+
 2.0) Contact
+
 3.0) Licensing
+
 4.0) Credits
 
+
 1.0) About
+
 Rok is an action RPG project using SDL.
+
 Rok is licensed under the MIT License. Seriously don't trust this not to be leaky I'm a hobbyist.
+
 See the section "Licensing" below for details.
 
+
 2.0) Contact
+
     Sam Warren sbw372@gmail.com
+
+
     If you see something wrong, it's probably because I'm bad at C. I'd love to get better, feel free to drop me a line.
 
 3.0) Licensing
+
+
 #######################
 Copyright 2021 Sam Warren
 
