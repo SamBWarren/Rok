@@ -3,7 +3,6 @@
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL_ttf.h>
 
 
 
@@ -37,9 +36,6 @@ SDL_Rect console_rect_dest;
 
 uint8 r_i = 0;
 
-TTF_Font *font24 = NULL;
-TTF_Font *font16 = NULL;
-
 SDL_DisplayMode ogmode;
 
 struct printer{
@@ -57,6 +53,7 @@ typedef struct{
     SDL_Texture* texture;
 } sprite;
 
+sprite sprarr[256];
 
 #pragma endregion
 
@@ -104,15 +101,7 @@ Bool render_init()
             rect_16.y = 0;
             rect_16.h = 32;
             rect_16.w = 16;
-
-                /*Init SDL_ttf*/
-            if( TTF_Init() == -1)
-            {
-                printf("Unable to init SDL_ttf\n");
-            }
-            else{
-                printf("SDL_ttf booted without error\n");
-            }          
+        
 
         }
     }
@@ -152,7 +141,15 @@ Bool render_loadMedia()
 {
     Bool success = true;
     SDL_Surface* my_surface;
-    my_surface = SDL_LoadBMP( "./data/guy.bmp" );
+
+
+    /*my_surface =  SDL_LoadBMP( "./data/RPG_sprites.bmp") ;SDL_LoadBMP( "./data/guy.bmp" );*/
+    
+    printf("gonna load\n");
+    sprarr[0].texture = SDL_LoadBMP( "./data/RPG_sprites.bmp" );
+    my_surface = sprarr[0].texture;
+    printf("loaded bmp\n");
+    
     if( my_surface == NULL )
     {
         printf("Unable to load image. SDL Error: %s\n", SDL_GetError());
@@ -188,12 +185,6 @@ Bool render_loadMedia()
 
     SDL_UpdateWindowSurface( gWindow );
 
-    font24 = TTF_OpenFont( "./data/CenturyGothic.ttf",24);
-    font16 = TTF_OpenFont( "./data/CenturyGothic.ttf",16);
-	if(!font16) {
-		printf("Error opening fonts: %s\n", TTF_GetError());
-		success = false;
-	}
     return success;
 }
 
@@ -231,6 +222,7 @@ int render_controller(){
     printf("%x of 2 loading successes\n",success);
     return success;
 }
+
 
 void render_print(char *text, int32 x, int32 y){
 }

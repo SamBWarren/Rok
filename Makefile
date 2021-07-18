@@ -18,4 +18,4 @@ COMPILER_FLAGS = -std=c89 -w
 OBJ_NAME = r
 
 all : $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) -Wall $(COMPILER_FLAGS) $(LINKER_FLAGS) `sdl2-config --cflags --libs` /lib64/libSDL2_ttf.so -g -o $(OBJ_NAME) 2> err.txt
+	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) -Wall $(COMPILER_FLAGS) $(LINKER_FLAGS) `sdl2-config --cflags --libs` -g -o $(OBJ_NAME) 2> err.txt
