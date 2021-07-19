@@ -31,5 +31,7 @@ End license text.
 
 #### 4.0) Credits
 1) SDL (zlib)
-    * Source:   https://www.libsdl.org/
-    * License:  http://www.zlib.net/zlib_license.html
+   * Source:   https://www.libsdl.org/
+   * License:  http://www.zlib.net/zlib_license.html
+2) ENDESGA 64 Palette
+   * https://lospec.com/palette-list/endesga-64
