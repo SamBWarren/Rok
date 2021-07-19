@@ -1,8 +1,8 @@
 ###### Table of contents
 
-1.0) About
-2.0) Contact
-3.0) Licensing
+1.0) About\
+2.0) Contact\
+3.0) Licensing\
 4.0) Credits
 
 
