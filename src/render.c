@@ -8,9 +8,10 @@
 
 #pragma region declares
 /*Screen dimension constants*/
-const int SCREEN_WIDTH = 320;
-const int SCREEN_HEIGHT = 240;
-uint8 resolution_multiplier = 3;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
+uint8 resolution_multiplier = 1;
+Bool GAME_FULLSCREEN = false;
 
 /*the window we'll be rendering to*/
 SDL_Window* gWindow = NULL;
@@ -92,8 +93,10 @@ Bool render_init()
 
 			SDL_RenderSetScale(renderer, resolution_multiplier, resolution_multiplier);
             /*set fullscreen*/
-			/*SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN);*/
-
+            if (GAME_FULLSCREEN)
+            {
+			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN);
+            }
 			/**/
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 			
@@ -146,11 +149,11 @@ Bool render_loadMedia()
     /*my_surface =  SDL_LoadBMP( "./data/RPG_sprites.bmp") ;SDL_LoadBMP( "./data/guy.bmp" );*/
     
     printf("gonna load\n");
-    sprarr[0].texture = SDL_LoadBMP( "./data/RPG_sprites.bmp" );
-    my_surface = sprarr[0].texture;
+    sprarr[0] = cut_sprite(SDL_LoadBMP( "./data/RPG_sprites.bmp" ), 0, 0, 16, 32);
+    my_tex = sprarr[0].texture;
     printf("loaded bmp\n");
     
-    if( my_surface == NULL )
+    if( my_tex == NULL )
     {
         printf("Unable to load image. SDL Error: %s\n", SDL_GetError());
         success = false;
@@ -158,30 +161,8 @@ Bool render_loadMedia()
     }
 
 
-    uint32 colorkey = SDL_MapRGB(my_surface->format,255,255,255);
-    SDL_SetColorKey(my_surface, SDL_TRUE, colorkey);
-    my_tex = SDL_CreateTextureFromSurface(renderer, my_surface);
     SDL_SetTextureBlendMode(my_tex,SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 0);
-    SDL_FreeSurface(my_surface);
-
-    my_surface = NULL;
-    my_surface = SDL_LoadBMP("./data/RPG_sprites.bmp");
-    if( my_surface == NULL )
-    {
-        printf("unable to load RPG_sprites");
-        success = false;
-        return success;
-    }
-    SDL_SetColorKey(my_surface, SDL_TRUE, colorkey);
-
-    sprite spr;
-    spr = cut_sprite(my_surface,16,0,16,32);
-
-    spritesheet_tex = spr.texture;
-    /*this is where we should cut into sprites*/
-    SDL_FreeSurface(my_surface);
-
 
     SDL_UpdateWindowSurface( gWindow );
 
