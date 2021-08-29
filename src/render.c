@@ -55,6 +55,8 @@ typedef struct{
 } sprite;
 
 sprite sprarr[256];
+/*CP437 ASCII*/
+SDL_Texture* ASCII[256];
 
 #pragma endregion
 
@@ -138,6 +140,29 @@ sprite cut_sprite(SDL_Surface* surface, int x, int y, int w, int h){
     return spr;
 }
 
+/*cut text*/
+void cut_text(SDL_Surface* image){
+    uint8 i;
+
+    SDL_Rect temp_rect;
+    temp_rect.x=0;
+    temp_rect.y=0;
+    temp_rect.w=8;
+    temp_rect.h=8;
+    SDL_Rect temp_surface_rect;
+    temp_surface_rect.x=0;
+    temp_surface_rect.y=0;
+    temp_surface_rect.w=8;
+    temp_surface_rect.h=8;
+    for( i=0; i<255; i=i+1 ){
+        SDL_Surface* temp_surface;
+        temp_surface = SDL_CreateRGBSurface(0,8,8,32,0,0,0,0);
+        SDL_BlitSurface(image, &temp_rect, temp_surface, &temp_surface_rect);
+        ASCII[i] = SDL_CreateTextureFromSurface(renderer,temp_surface);
+        temp_rect.x = temp_rect.x+8;
+        temp_rect.y = temp_rect.y+8;
+    }
+}
 
 /*Loads media*/
 Bool render_loadMedia()
@@ -145,6 +170,9 @@ Bool render_loadMedia()
     Bool success = true;
     SDL_Surface* my_surface;
 
+
+    /*load our ASCII text*/
+    cut_text(SDL_LoadBMP("./data/font/red.bmp"));
 
     /*my_surface =  SDL_LoadBMP( "./data/RPG_sprites.bmp") ;SDL_LoadBMP( "./data/guy.bmp" );*/
     
@@ -160,11 +188,16 @@ Bool render_loadMedia()
         return success;
     }
 
-
     SDL_SetTextureBlendMode(my_tex,SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 0);
 
     SDL_UpdateWindowSurface( gWindow );
+
+    
+
+
+
+
 
     return success;
 }
@@ -172,18 +205,9 @@ Bool render_loadMedia()
 int render_frame(){
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer,my_tex,&rect_16,&Player.body);
-    SDL_RenderCopy(renderer,console_tex,&console_rect_origin,&console_rect_dest);
-    SDL_RenderCopy(renderer,print_tex,&print_rect,&print_dest_rect);
-    /*SDL_RenderCopy(renderer,spritesheet_tex,&rect_16,&Player.body);*/
 
-    uint8 i;
-    for( i=0; i<printcounter; ++i ){
-        SDL_RenderCopy(renderer,printarr[i].texture,&printarr[i].srcrect,&printarr[i].destrect);
-        SDL_DestroyTexture(printarr[i].texture);
-    }
+
     SDL_RenderPresent(renderer);
-    SDL_DestroyTexture(print_tex);
-    SDL_DestroyTexture(console_tex);
     printcounter = 0;
     return 0;
 }
