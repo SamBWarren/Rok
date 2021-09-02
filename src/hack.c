@@ -9,3 +9,4 @@
 #include "input.c"
 #include "render.c"
 #include "update.c"
+#include "console.c"

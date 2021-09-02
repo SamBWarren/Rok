@@ -1,5 +1,6 @@
 #include "basic.h"
 #include "game.h"
+#include "console.h"
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,8 @@
 /*Screen dimension constants*/
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+SDL_Rect SCREEN_RECT;
+
 uint8 resolution_multiplier = 1;
 Bool GAME_FULLSCREEN = false;
 
@@ -29,9 +32,13 @@ SDL_Texture* spritesheet_tex;  /*my sprite sheet*/
 SDL_Texture* print_tex = NULL;
 SDL_Texture* console_tex = NULL;
 
+SDL_Texture* background = NULL;
+
 SDL_Rect print_rect;
 SDL_Rect print_dest_rect;
 SDL_Rect rect_16;
+SDL_Rect rect_16x32;
+SDL_Rect rect_8;
 SDL_Rect console_rect_origin;
 SDL_Rect console_rect_dest;
 
@@ -39,14 +46,8 @@ uint8 r_i = 0;
 
 SDL_DisplayMode ogmode;
 
-struct printer{
-    SDL_Rect srcrect;
-    SDL_Rect destrect;
-    SDL_Texture* texture;
-};
 
-struct printer printarr[20];
-uint8 printcounter;
+
 
 typedef struct{
     SDL_Rect rect;
@@ -55,6 +56,7 @@ typedef struct{
 } sprite;
 
 sprite sprarr[256];
+
 /*CP437 ASCII*/
 SDL_Texture* ASCII[256];
 
@@ -64,7 +66,6 @@ SDL_Texture* ASCII[256];
 Bool render_init() 
 {
     Bool success = true;
-    printcounter = 0;
     /*Initialize SDL*/
     if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 )
     {
@@ -73,6 +74,8 @@ Bool render_init()
     }
     else {
         /*Create Window*/
+        SCREEN_RECT.h = SCREEN_HEIGHT;
+        SCREEN_RECT.w = SCREEN_WIDTH;
         gWindow = SDL_CreateWindow( "Rok", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH*resolution_multiplier, SCREEN_HEIGHT*resolution_multiplier, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
         if( gWindow == NULL )
         {
@@ -80,9 +83,11 @@ Bool render_init()
             success = false;
         }
         else {
+
             /*create renderer*/
             renderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
 
             /*get window surface*/
             gScreenSurface = SDL_GetWindowSurface( gWindow );
@@ -97,16 +102,24 @@ Bool render_init()
             /*set fullscreen*/
             if (GAME_FULLSCREEN)
             {
+            /*SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");*/
 			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN);
             }
 			/**/
-			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 			
+            rect_16x32.x = 0;
+            rect_16x32.y = 0;
+            rect_16x32.h = 32;
+            rect_16x32.w = 16;
             rect_16.x = 0;
             rect_16.y = 0;
-            rect_16.h = 32;
+            rect_16.h = 16;
             rect_16.w = 16;
-        
+            rect_8.x = 0;
+            rect_8.y = 0;
+            rect_8.h = 8;
+            rect_8.w = 8;
 
         }
     }
@@ -143,7 +156,8 @@ sprite cut_sprite(SDL_Surface* surface, int x, int y, int w, int h){
 /*cut text*/
 void cut_text(SDL_Surface* image){
     uint8 i;
-
+    uint8 xx;
+    uint8 yy;
     SDL_Rect temp_rect;
     temp_rect.x=0;
     temp_rect.y=0;
@@ -155,12 +169,17 @@ void cut_text(SDL_Surface* image){
     temp_surface_rect.w=8;
     temp_surface_rect.h=8;
     for( i=0; i<255; i=i+1 ){
+        if( xx==16 ) {
+            xx = 0;
+            yy = yy+1;
+        }
         SDL_Surface* temp_surface;
         temp_surface = SDL_CreateRGBSurface(0,8,8,32,0,0,0,0);
         SDL_BlitSurface(image, &temp_rect, temp_surface, &temp_surface_rect);
         ASCII[i] = SDL_CreateTextureFromSurface(renderer,temp_surface);
-        temp_rect.x = temp_rect.x+8;
-        temp_rect.y = temp_rect.y+8;
+        temp_rect.x = xx*8;
+        temp_rect.y = yy*8;
+        xx = xx+1;
     }
 }
 
@@ -173,6 +192,8 @@ Bool render_loadMedia()
 
     /*load our ASCII text*/
     cut_text(SDL_LoadBMP("./data/font/red.bmp"));
+
+    background = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("./data/background.bmp"));
 
     /*my_surface =  SDL_LoadBMP( "./data/RPG_sprites.bmp") ;SDL_LoadBMP( "./data/guy.bmp" );*/
     
@@ -204,11 +225,13 @@ Bool render_loadMedia()
 
 int render_frame(){
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer,my_tex,&rect_16,&Player.body);
+    SDL_RenderCopy(renderer,background,&SCREEN_RECT,&SCREEN_RECT);
+    SDL_RenderCopy(renderer,my_tex,&rect_16x32,&Player.body);
 
+    bitprint("Hello World. This is a pretty incredible thing that I've made. I'm typing this out to see what 40 characters looks like on screen. I wonder how much time it to render this many letters every frame.", 40);
 
+    /*SDL_RenderCopy(renderer,ASCII['s'+1],&rect_8,&rect_8);*/
     SDL_RenderPresent(renderer);
-    printcounter = 0;
     return 0;
 }
 
@@ -228,13 +251,4 @@ int render_controller(){
     return success;
 }
 
-
-void render_print(char *text, int32 x, int32 y){
-}
-
-void render_printer(char *text, int32 x, int32 y) {
-}
-
-void render_print_debug(){
-}
 
