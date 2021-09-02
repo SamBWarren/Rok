@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <gameloop.h>
 
 
 
@@ -46,7 +47,7 @@ uint8 r_i = 0;
 
 SDL_DisplayMode ogmode;
 
-
+char frametime[2];
 
 
 typedef struct{
@@ -228,8 +229,9 @@ int render_frame(){
     SDL_RenderCopy(renderer,background,&SCREEN_RECT,&SCREEN_RECT);
     SDL_RenderCopy(renderer,my_tex,&rect_16x32,&Player.body);
 
-    bitprint("Hello World. This is a pretty incredible thing that I've made. I'm typing this out to see what 40 characters looks like on screen. I wonder how much time it to render this many letters every frame.", 40);
-
+    bitprint("Hello World. This is a pretty incredible thing that I've made. I'm typing this out to see what 40 characters looks like on screen. I wonder how much time it takes to render this many letters every frame.", 40, 10, 10);
+    sprintf(frametime,"%d",lastframetime);
+    bitprint(&frametime,40,10,0);
     /*SDL_RenderCopy(renderer,ASCII['s'+1],&rect_8,&rect_8);*/
     SDL_RenderPresent(renderer);
     return 0;

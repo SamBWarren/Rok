@@ -3,6 +3,16 @@
 #include "console.h"
 #include <SDL.h>
 
+typedef struct Console{
+    char *name;
+    uint8 w;
+    uint8 h;
+    uint8 x;
+    uint8 y;
+    SDL_Texture* texture;  
+} console;
+
+
 console consoles[3];
 uint8 num_consoles = 0;
 
@@ -37,12 +47,12 @@ int console_new(int w, int h, int x, int y)
     return true;*/
 }
 
-Bool console_print(console this_console, char *text)
+Bool console_print(uint8 console_index, char *text)
 {
     return true;
 }
 
-Bool bitprint( char *text, uint8 cols )
+Bool bitprint( char *text, uint8 cols, uint8 x, uint8 y)
 {
 	SDL_Texture *tex;
 	uint8 h;
@@ -53,18 +63,19 @@ Bool bitprint( char *text, uint8 cols )
 	SDL_SetRenderTarget(renderer, tex);*/
 
 	SDL_Rect dstrect;
-	dstrect.x=0;
-	dstrect.y=0;
+	dstrect.x=x*8;
+	dstrect.y=y*8;
 	dstrect.w=8;
 	dstrect.h=8;
 
-	uint8 colcount;
+	uint8 colcount=0;
 	int rblitt;
     int i;
 	for(i=0;i<strlen(text);i=i+1)
 	{
-		dstrect.x = colcount*8;
-		rblitt = SDL_RenderCopy(renderer, ASCII[text[i]+1], &rect_8, &dstrect);
+		/*dstrect.x = colcount*8+(x*8);*/
+        dstrect.x =colcount*8+(x*8);
+		rblitt = SDL_RenderCopy(renderer, ASCII[text[i]+1], NULL, &dstrect);
 		colcount = colcount+1;
 		if(colcount > cols)
 		{
