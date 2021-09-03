@@ -32,7 +32,7 @@ int playgame()
     game_boot();
     NEXT = SDL_GetTicks() + TICK_INTERVAL;
     while(true) {
-
+        
         input(&gameover);               /*read inputs*/
         game_update();                   /*update gamestate*/
         render_frame();                 /*draw frame*/

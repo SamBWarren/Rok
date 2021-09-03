@@ -20,7 +20,7 @@ int console_new(int w, int h, int x, int y)
 {
     if( num_consoles>2 )
     {
-        return 0;
+        return -1;
     }
     else 
     {
@@ -28,11 +28,9 @@ int console_new(int w, int h, int x, int y)
         consoles[num_consoles].h=h;
         consoles[num_consoles].x=x;
         consoles[num_consoles].y=y;
-        consoles[num_consoles].texture = SDL_CreateTextureFromSurface(renderer, SDL_CreateRGBSurface(0,w*8,h*8,32,0,0,0,0));
-
-
-        num_consoles = num_consoles+1;
+        consoles[num_consoles].texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,w*8,h*8);
         return num_consoles;
+        num_consoles = num_consoles+1;
     }
 
 
@@ -49,6 +47,29 @@ int console_new(int w, int h, int x, int y)
 
 Bool console_print(uint8 console_index, char *text)
 {
+    SDL_Rect dstrect;
+    dstrect.x=consoles[console_index].x*8;
+    dstrect.y=0;
+    dstrect.w=8;
+    dstrect.h=8;
+    SDL_Texture *oldtarget;
+    oldtarget = SDL_GetRenderTarget(renderer);
+    SDL_SetRenderTarget(renderer,consoles[console_index].texture);
+    uint8 colcount=0;
+    int rblitt;
+    int i;
+    for(i=0;i<strlen(text);i=i+1)
+    {
+        dstrect.x = colcount*8;
+        rblitt = SDL_RenderCopy(renderer,ASCII[text[i]+1],NULL,&dstrect);
+        colcount = colcount+1;
+        if(colcount>=consoles[console_index].w)
+        {
+            colcount=0;
+            dstrect.y=dstrect.y+8;
+        }
+    }
+    SDL_SetRenderTarget(renderer,oldtarget);
     return true;
 }
 
@@ -77,11 +98,21 @@ Bool bitprint( char *text, uint8 cols, uint8 x, uint8 y)
         dstrect.x =colcount*8+(x*8);
 		rblitt = SDL_RenderCopy(renderer, ASCII[text[i]+1], NULL, &dstrect);
 		colcount = colcount+1;
-		if(colcount > cols)
+		if(colcount >= cols)
 		{
 			colcount=0;
 			dstrect.y=dstrect.y+8;
 		}
 	}
 	/*SDL_SetRenderTarget(renderer,oldtarget);*/
+}
+
+Bool console_render(uint8 console_index)
+{
+    SDL_Rect dstrect;
+    dstrect.x=consoles[console_index].x*8;
+    dstrect.y=consoles[console_index].y*8;
+    dstrect.h=consoles[console_index].h*8;
+    dstrect.w=consoles[console_index].w*8;
+    SDL_RenderCopy(renderer,consoles[console_index].texture, NULL, &dstrect);
 }

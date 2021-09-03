@@ -49,6 +49,8 @@ SDL_DisplayMode ogmode;
 
 char frametime[2];
 
+uint8 console_indexes[3];
+
 
 typedef struct{
     SDL_Rect rect;
@@ -190,7 +192,7 @@ Bool render_loadMedia()
     Bool success = true;
     SDL_Surface* my_surface;
 
-
+    console_indexes[0] = console_new(40,30,10,10);
     /*load our ASCII text*/
     cut_text(SDL_LoadBMP("./data/font/red.bmp"));
 
@@ -217,7 +219,7 @@ Bool render_loadMedia()
 
     
 
-
+    console_print(console_indexes[0],"Hello world. This is to test character wrapping");
 
 
 
@@ -229,9 +231,11 @@ int render_frame(){
     SDL_RenderCopy(renderer,background,&SCREEN_RECT,&SCREEN_RECT);
     SDL_RenderCopy(renderer,my_tex,&rect_16x32,&Player.body);
 
-    bitprint("Hello World. This is a pretty incredible thing that I've made. I'm typing this out to see what 40 characters looks like on screen. I wonder how much time it takes to render this many letters every frame.", 40, 10, 10);
+    bitprint("Hello World. This is a pretty incredible thing that I've made. I'm typing this out to see what 40 characters looks like on screen. I wonder how much time it takes to render this many letters every frame.", 40, 10, 70);
     sprintf(frametime,"%d",lastframetime);
     bitprint(&frametime,40,10,0);
+
+    console_render(console_indexes[0]);
     /*SDL_RenderCopy(renderer,ASCII['s'+1],&rect_8,&rect_8);*/
     SDL_RenderPresent(renderer);
     return 0;
@@ -252,5 +256,3 @@ int render_controller(){
     printf("%x of 2 loading successes\n",success);
     return success;
 }
-
-
